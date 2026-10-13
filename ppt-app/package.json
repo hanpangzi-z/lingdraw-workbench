@@ -1,0 +1,58 @@
+{
+  "name": "lingdraw-ppt-studio",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "postinstall": "prisma generate",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
+    "db:seed": "prisma db seed",
+    "db:studio": "prisma studio",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:cloud": "tsx --env-file=.env scripts/test-cloud-integration.ts",
+    "test:library": "tsx --env-file=.env scripts/test-resource-library.ts",
+    "ppt:sample": "tsx scripts/generate-sample-ppt.ts",
+    "ppt:editor-sample": "tsx scripts/generate-editor-sample-ppt.ts"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1121.0",
+    "@aws-sdk/s3-request-presigner": "^3.1121.0",
+    "@prisma/adapter-mariadb": "7.10.0",
+    "@prisma/adapter-pg": "^7.10.0",
+    "@prisma/client": "^7.10.0",
+    "jszip": "^3.10.1",
+    "lucide-react": "^0.468.0",
+    "next": "16.3.3",
+    "pdfjs-dist": "^6.2.108",
+    "pg": "^8.23.0",
+    "pptxgenjs": "^4.0.1",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "xlsx": "^0.18.5",
+    "zod": "^4.5.4",
+    "zustand": "^5.0.15"
+  },
+  "overrides": {
+    "@prisma/adapter-mariadb": {
+      "mariadb": "3.4.7"
+    }
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^22.10.2",
+    "@types/pg": "^8.23.1",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
+    "fake-indexeddb": "6.2.5",
+    "prisma": "^7.10.0",
+    "tailwindcss": "^4.3.3",
+    "tsx": "^4.23.12",
+    "typescript": "^5.7.2",
+    "vitest": "^4.1.11"
+  }
+}

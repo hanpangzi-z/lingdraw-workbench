@@ -1,0 +1,1727 @@
+:root {
+    --smart-agent-width: 380px;
+    --smart-agent-border: #e6e9ef;
+    --smart-agent-muted: #7f8796;
+    --smart-agent-panel: #ffffff;
+    --smart-agent-soft: #f6f7f9;
+    --smart-agent-text: #171a21;
+    --smart-agent-accent: #4d72ff;
+}
+
+body.smart-agent-enabled {
+    overflow: hidden;
+}
+
+body.smart-agent-enabled .shell {
+    width: calc(100vw - var(--smart-agent-width));
+    max-width: calc(100vw - var(--smart-agent-width));
+}
+
+body.smart-agent-collapsed .shell {
+    width: 100vw;
+    max-width: 100vw;
+}
+
+.smart-agent-panel {
+    position: fixed;
+    z-index: 45;
+    inset: 0 0 0 auto;
+    width: var(--smart-agent-width);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    color: var(--smart-agent-text);
+    background: var(--smart-agent-panel);
+    border-left: 1px solid var(--smart-agent-border);
+    box-shadow: -10px 0 28px rgba(18, 27, 51, .04);
+    transition: transform .2s ease, opacity .2s ease;
+}
+
+body.smart-agent-collapsed .smart-agent-panel {
+    pointer-events: none;
+    opacity: 0;
+    transform: translateX(100%);
+}
+
+.smart-agent-header {
+    min-height: 62px;
+    padding: 0 14px 0 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 1px solid var(--smart-agent-border);
+    background: rgba(255, 255, 255, .96);
+}
+
+.smart-agent-header > div:first-child {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.smart-agent-header strong {
+    max-width: 250px;
+    overflow: hidden;
+    color: #111827;
+    font-size: 14px;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.smart-agent-header span {
+    color: var(--smart-agent-muted);
+    font-size: 11px;
+}
+
+.smart-agent-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.smart-agent-header-actions button,
+.smart-agent-reopen {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 0;
+    border-radius: 9px;
+    color: #596273;
+    background: transparent;
+    cursor: pointer;
+    font: 500 17px/30px system-ui, sans-serif;
+}
+
+.smart-agent-header-actions button:hover {
+    background: var(--smart-agent-soft);
+}
+
+.smart-agent-messages {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    padding: 18px 15px 24px;
+    overflow: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+}
+
+.smart-agent-empty {
+    min-height: 70%;
+    padding: 40px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 9px;
+    text-align: center;
+}
+
+.smart-agent-empty-mark {
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    margin-bottom: 8px;
+    border-radius: 13px;
+    color: #fff;
+    background: linear-gradient(135deg, #397bff, #8a52f5);
+    box-shadow: 0 8px 20px rgba(77, 114, 255, .25);
+    font-size: 19px;
+}
+
+.smart-agent-empty strong {
+    font-size: 15px;
+}
+
+.smart-agent-empty p {
+    max-width: 250px;
+    margin: 0;
+    color: var(--smart-agent-muted);
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.smart-agent-message {
+    margin: 0 0 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.smart-agent-message.user {
+    align-items: flex-end;
+}
+
+.smart-agent-message.assistant {
+    align-items: stretch;
+}
+
+.smart-agent-bubble {
+    max-width: 92%;
+    padding: 10px 12px;
+    border-radius: 12px;
+    font-size: 13px;
+    line-height: 1.65;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.smart-agent-message.user .smart-agent-bubble {
+    border-bottom-right-radius: 4px;
+    color: #1f2937;
+    background: #f1f2f4;
+}
+
+.smart-agent-message.assistant .smart-agent-bubble {
+    max-width: 100%;
+    padding: 0 2px;
+    border-radius: 0;
+    background: transparent;
+}
+
+.smart-agent-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #6c63ff;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.smart-agent-plan {
+    padding: 12px;
+    border: 1px solid #e8e8f2;
+    border-radius: 12px;
+    background: #fbfbfd;
+}
+
+.smart-agent-plan h4 {
+    margin: 0 0 8px;
+    font-size: 13px;
+}
+
+.smart-agent-plan-section + .smart-agent-plan-section {
+    margin-top: 9px;
+}
+
+.smart-agent-plan-section strong {
+    display: block;
+    margin-bottom: 3px;
+    font-size: 12px;
+}
+
+.smart-agent-plan-section p {
+    margin: 0;
+    color: #5e6675;
+    font-size: 12px;
+    line-height: 1.55;
+}
+
+.smart-agent-image-card {
+    overflow: hidden;
+    border: 1px solid #e4e7ed;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.smart-agent-image-card img,
+.smart-agent-image-card video {
+    width: 100%;
+    max-height: 330px;
+    display: block;
+    object-fit: contain;
+    background: #f5f6f8;
+}
+
+.smart-agent-image-card video {
+    aspect-ratio: 16 / 9;
+    background: #11141a;
+}
+
+.smart-agent-image-actions {
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    border-top: 1px solid #eceef2;
+}
+
+.smart-agent-image-actions span {
+    min-width: 0;
+    overflow: hidden;
+    color: #7a8290;
+    font-size: 11px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.smart-agent-image-actions button {
+    flex: none;
+    padding: 6px 10px;
+    border: 1px solid #dce2ea;
+    border-radius: 8px;
+    color: #2d3748;
+    background: #fff;
+    cursor: pointer;
+    font-size: 11px;
+}
+
+.smart-agent-image-actions button:hover {
+    border-color: #9eb2ff;
+    color: #315ad9;
+    background: #f5f7ff;
+}
+
+.smart-agent-error {
+    padding: 11px 12px;
+    border: 1px solid #f4c3c3;
+    border-radius: 10px;
+    color: #b43b3b;
+    background: #fff4f4;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.smart-agent-turn + .smart-agent-turn {
+    padding-top: 14px;
+    border-top: 1px solid var(--smart-agent-border);
+}
+
+.smart-agent-turn-refs {
+    margin-top: 8px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 5px;
+}
+
+.smart-agent-turn-refs img {
+    width: 42px;
+    height: 42px;
+    border: 1px solid rgba(31, 41, 55, .1);
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.smart-agent-analysis,
+.smart-agent-progress,
+.smart-agent-review-warning,
+.smart-agent-error-card,
+.smart-agent-system-error,
+.smart-agent-clarification,
+.smart-agent-review,
+.smart-agent-suggestions {
+    margin-top: 9px;
+}
+
+.smart-agent-analysis {
+    padding: 10px 11px;
+    border: 1px solid #e5e8ff;
+    border-radius: 10px;
+    background: #fafaff;
+}
+
+.smart-agent-analysis > span {
+    color: #655cf4;
+    font-size: 11px;
+    font-weight: 650;
+}
+
+.smart-agent-analysis p,
+.smart-agent-review p,
+.smart-agent-review-warning span,
+.smart-agent-error-card p {
+    margin: 5px 0 0;
+    color: #5f6878;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.smart-agent-progress {
+    padding: 10px 11px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 9px;
+    color: #626b79;
+    background: #f6f7f9;
+    font-size: 12px;
+}
+
+.smart-agent-progress i {
+    width: 13px;
+    height: 13px;
+    flex: none;
+    border: 2px solid #cfd5e0;
+    border-top-color: var(--smart-agent-accent);
+    border-radius: 50%;
+    animation: smart-agent-spin .8s linear infinite;
+}
+
+.smart-agent-plan-section ul {
+    margin: 6px 0 0;
+    padding-left: 17px;
+    color: #5e6675;
+    font-size: 11px;
+    line-height: 1.55;
+}
+
+.smart-agent-colors {
+    margin-top: 7px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.smart-agent-color {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: #6b7280;
+    font-size: 10px;
+}
+
+.smart-agent-color i {
+    width: 12px;
+    height: 12px;
+    border: 1px solid rgba(17, 24, 39, .12);
+    border-radius: 50%;
+}
+
+.smart-agent-clarification {
+    padding: 12px;
+    border: 1px solid #e3e6ef;
+    border-radius: 12px;
+    background: #fbfbfd;
+}
+
+.smart-agent-clarification h4,
+.smart-agent-clarification p {
+    margin: 0 0 8px;
+}
+
+.smart-agent-clarification h4 {
+    font-size: 13px;
+}
+
+.smart-agent-clarification p,
+.smart-agent-clarification small {
+    color: #6b7280;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.smart-agent-clarification fieldset {
+    margin: 11px 0 0;
+    padding: 0;
+    border: 0;
+}
+
+.smart-agent-clarification legend {
+    margin-bottom: 3px;
+    color: #252b36;
+    font-size: 12px;
+    font-weight: 650;
+}
+
+.smart-agent-options {
+    margin-top: 7px;
+    display: grid;
+    gap: 6px;
+}
+
+.smart-agent-options label {
+    padding: 8px 9px;
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    border: 1px solid #e0e4eb;
+    border-radius: 9px;
+    background: #fff;
+    cursor: pointer;
+}
+
+.smart-agent-options label.selected {
+    border-color: #91a7ff;
+    background: #f4f6ff;
+}
+
+.smart-agent-options input {
+    margin: 2px 0 0;
+}
+
+.smart-agent-options span,
+.smart-agent-options b,
+.smart-agent-options em {
+    min-width: 0;
+    display: block;
+}
+
+.smart-agent-options b {
+    color: #303746;
+    font-size: 11px;
+}
+
+.smart-agent-options em {
+    margin-top: 2px;
+    color: #7a8290;
+    font-size: 10px;
+    font-style: normal;
+    line-height: 1.4;
+}
+
+.smart-agent-card-actions {
+    margin-top: 10px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 7px;
+}
+
+.smart-agent-card-actions button,
+.smart-agent-suggestions button {
+    padding: 6px 9px;
+    border: 1px solid #dbe0e8;
+    border-radius: 8px;
+    color: #465062;
+    background: #fff;
+    cursor: pointer;
+    font-size: 11px;
+}
+
+.smart-agent-card-actions button.primary {
+    border-color: #20242d;
+    color: #fff;
+    background: #20242d;
+}
+
+.smart-agent-review {
+    padding: 11px;
+    border: 1px solid #dceee3;
+    border-radius: 11px;
+    background: #f7fcf9;
+}
+
+.smart-agent-review header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 12px;
+}
+
+.smart-agent-review header b {
+    color: #1a8b55;
+    font-size: 15px;
+}
+
+.smart-agent-highlights {
+    margin-top: 9px;
+    display: grid;
+    gap: 7px;
+}
+
+.smart-agent-highlights div,
+.smart-agent-highlights strong,
+.smart-agent-highlights span {
+    display: block;
+}
+
+.smart-agent-highlights strong {
+    color: #246e4b;
+    font-size: 11px;
+}
+
+.smart-agent-highlights span {
+    margin-top: 2px;
+    color: #667268;
+    font-size: 10px;
+    line-height: 1.45;
+}
+
+.smart-agent-checks {
+    margin-top: 9px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.smart-agent-checks span {
+    padding: 3px 6px;
+    border-radius: 12px;
+    font-size: 9px;
+}
+
+.smart-agent-checks .passed { color: #177b49; background: #e8f7ee; }
+.smart-agent-checks .failed { color: #b54141; background: #fff0f0; }
+.smart-agent-conclusion { padding-top: 8px; border-top: 1px solid #dceee3; }
+
+.smart-agent-review-warning,
+.smart-agent-error-card,
+.smart-agent-system-error {
+    padding: 10px 11px;
+    border: 1px solid #f2caca;
+    border-radius: 10px;
+    color: #a93f3f;
+    background: #fff6f6;
+    font-size: 11px;
+}
+
+.smart-agent-review-warning {
+    border-color: #efdba8;
+    color: #8b681d;
+    background: #fffbef;
+}
+
+.smart-agent-review-warning strong,
+.smart-agent-review-warning span,
+.smart-agent-error-card strong {
+    display: block;
+}
+
+.smart-agent-suggestions {
+    display: grid;
+    gap: 5px;
+}
+
+.smart-agent-suggestions > strong {
+    margin-bottom: 2px;
+    color: #4f5968;
+    font-size: 11px;
+}
+
+.smart-agent-suggestions button {
+    width: 100%;
+    text-align: left;
+    border-color: transparent;
+    background: #f7f8fa;
+}
+
+.smart-agent-suggestions button:hover {
+    color: #3659d9;
+    background: #f0f3ff;
+}
+
+.smart-agent-resolved {
+    color: #178754;
+    font-size: 10px;
+}
+
+.smart-agent-pending {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: #737b89;
+    font-size: 12px;
+}
+
+.smart-agent-pending::before {
+    content: '';
+    width: 12px;
+    height: 12px;
+    border: 2px solid #cbd2df;
+    border-top-color: #5c76ff;
+    border-radius: 50%;
+    animation: smart-agent-spin .8s linear infinite;
+}
+
+@keyframes smart-agent-spin { to { transform: rotate(360deg); } }
+
+.smart-agent-unread {
+    position: absolute;
+    right: 18px;
+    bottom: 150px;
+    z-index: 2;
+    padding: 7px 11px;
+    border: 1px solid #dde2ea;
+    border-radius: 18px;
+    color: #394150;
+    background: rgba(255, 255, 255, .96);
+    box-shadow: 0 6px 18px rgba(20, 32, 56, .12);
+    cursor: pointer;
+    font-size: 11px;
+}
+
+.smart-agent-composer {
+    position: relative;
+    flex: none;
+    margin: 0 12px 12px;
+    padding: 10px;
+    border: 1px solid #dfe3e9;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 8px 26px rgba(22, 32, 52, .07);
+}
+
+.smart-agent-composer:focus-within {
+    border-color: #a8b9ff;
+    box-shadow: 0 0 0 3px rgba(77, 114, 255, .08), 0 8px 26px rgba(22, 32, 52, .07);
+}
+
+.smart-agent-references {
+    margin-bottom: 8px;
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+}
+
+.smart-agent-references::-webkit-scrollbar {
+    display: none;
+}
+
+.smart-agent-reference {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    flex: 0 0 80px;
+    border-radius: 10px;
+}
+
+.smart-agent-reference img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border-radius: inherit;
+    object-fit: cover;
+}
+
+.smart-agent-reference-index {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 27px;
+    height: 27px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, .28);
+    border-radius: 50%;
+    color: #fff;
+    background: rgba(31, 29, 25, .82);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .2);
+    font-size: 15px;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    pointer-events: none;
+}
+
+.smart-agent-reference button {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, .3);
+    border-radius: 50%;
+    color: #fff;
+    background: rgba(31, 29, 25, .76);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .18);
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity .15s ease, background .15s ease;
+}
+
+.smart-agent-reference:hover button,
+.smart-agent-reference button:focus-visible {
+    opacity: 1;
+}
+
+.smart-agent-reference button:hover {
+    color: #fff;
+    background: rgba(31, 29, 25, .94);
+}
+
+.smart-agent-reference button svg {
+    width: 12px;
+    height: 12px;
+}
+
+.smart-agent-prompt-preview {
+    position: absolute;
+    z-index: 8;
+    inset: 62px 0 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    color: #171a21;
+    background: #fff;
+}
+
+.smart-agent-prompt-preview[hidden] {
+    display: none;
+}
+
+.smart-agent-prompt-preview-empty {
+    min-height: 180px;
+    padding: 28px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #8a92a0;
+    text-align: center;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.smart-agent-prompt-preview-head {
+    min-height: 48px;
+    padding: 0 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    border-bottom: 1px solid #e7e9ed;
+    background: #fff;
+}
+
+.smart-agent-prompt-preview-head > div {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.smart-agent-prompt-preview-head svg {
+    width: 16px;
+    height: 16px;
+    stroke-width: 1.8;
+}
+
+.smart-agent-prompt-preview-head strong {
+    color: #14161b;
+    font-size: 12px;
+    line-height: 1.2;
+    font-weight: 760;
+}
+
+.smart-agent-prompt-preview-head button {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 7px;
+    color: #717782;
+    background: transparent;
+    cursor: pointer;
+}
+
+.smart-agent-prompt-preview-head button:hover {
+    color: #252932;
+    background: #f2f3f5;
+}
+
+.smart-agent-prompt-preview-head button svg {
+    width: 15px;
+    height: 15px;
+}
+
+.smart-agent-prompt-list {
+    min-height: 0;
+    flex: 1;
+    padding: 9px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+}
+
+.smart-agent-prompt-preview-item {
+    width: 100%;
+    min-height: 0;
+    padding: 10px;
+    flex: none;
+    display: grid;
+    align-items: stretch;
+    justify-content: stretch;
+    gap: 4px;
+    overflow: hidden;
+    border: 1px solid #e1e3e7;
+    border-radius: 9px;
+    color: #17191e;
+    background: #fff;
+    cursor: pointer;
+    text-align: left;
+    transition: background .14s ease, border-color .14s ease;
+}
+
+.smart-agent-prompt-preview-item:hover,
+.smart-agent-prompt-preview-item:focus-visible {
+    outline: 0;
+    border-color: #d9dce1;
+    background: #f4f4f5;
+}
+
+.smart-agent-prompt-preview-item strong {
+    min-width: 0;
+    overflow: hidden;
+    color: #16181d;
+    font-size: 10px;
+    line-height: 1.25;
+    font-weight: 760;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.smart-agent-prompt-preview-item span {
+    min-width: 0;
+    overflow: hidden;
+    color: #717782;
+    font-size: 8px;
+    line-height: 1.45;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#smartAgentInput {
+    width: 100%;
+    max-height: 160px;
+    min-height: 46px;
+    resize: none;
+    overflow-y: auto;
+    border: 0;
+    outline: 0;
+    color: #202532;
+    background: transparent;
+    font: 13px/1.55 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+#smartAgentInput::placeholder {
+    color: #a2a8b3;
+}
+
+.smart-agent-composer-actions {
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.smart-agent-hint {
+    display: block;
+    margin: -2px 0 6px 3px;
+    color: #8d95a3;
+    font-size: 10px;
+}
+
+.smart-agent-hint[hidden] {
+    display: none;
+}
+
+.smart-agent-composer-tools {
+    min-width: 0;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.smart-agent-tool-btn {
+    width: 34px;
+    height: 34px;
+    flex: none;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 10px;
+    color: #747b88;
+    background: transparent;
+    cursor: pointer;
+}
+
+.smart-agent-tool-btn:hover,
+.smart-agent-tool-btn.active {
+    color: #2d3440;
+    background: #f1f2f5;
+}
+
+.smart-agent-tool-btn:disabled {
+    opacity: .45;
+    cursor: wait;
+}
+
+.smart-agent-tool-btn svg {
+    width: 19px;
+    height: 19px;
+    stroke-width: 1.9;
+}
+
+.smart-agent-size-picker {
+    position: relative;
+    flex: none;
+}
+
+.smart-agent-size-picker[hidden] {
+    display: none;
+}
+
+.smart-agent-size-btn {
+    height: 34px;
+    max-width: 112px;
+    padding: 0 4px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    border: 0;
+    border-radius: 10px;
+    color: #555e6c;
+    background: transparent;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 750;
+}
+
+.smart-agent-size-btn:hover,
+.smart-agent-size-picker.open .smart-agent-size-btn {
+    color: #252a34;
+    background: #f1f2f5;
+}
+
+.smart-agent-size-btn > svg {
+    width: 16px;
+    height: 16px;
+    flex: none;
+}
+
+.smart-agent-size-btn > svg:last-child {
+    width: 13px;
+    height: 13px;
+    transition: transform .16s ease;
+}
+
+.smart-agent-size-picker.open .smart-agent-size-btn > svg:last-child {
+    transform: rotate(180deg);
+}
+
+#smartAgentSizeValue {
+    min-width: 0;
+    max-width: 64px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.smart-agent-size-popover {
+    position: fixed;
+    z-index: 80;
+    left: var(--smart-agent-size-left, 16px);
+    top: var(--smart-agent-size-top, 120px);
+    width: var(--smart-agent-size-width, 390px);
+    max-height: var(--smart-agent-size-max-height, 360px);
+    display: none;
+    grid-template-rows: auto minmax(0, 1fr);
+    overflow: hidden;
+    border: 1px solid #dfe3ea;
+    border-radius: 15px;
+    color: #202530;
+    background: #fff;
+    box-shadow: 0 16px 42px rgba(22, 30, 48, .16);
+}
+
+.smart-agent-size-picker.open .smart-agent-size-popover {
+    display: grid;
+    animation: smart-agent-size-in .16s ease-out;
+}
+
+@keyframes smart-agent-size-in {
+    from { opacity: 0; transform: translateY(5px) scale(.985); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.smart-agent-size-head {
+    min-height: 50px;
+    padding: 8px 9px 8px 13px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    border-bottom: 1px solid #e3e6ec;
+}
+
+.smart-agent-size-head > strong {
+    flex: none;
+    font-size: 12px;
+    font-weight: 820;
+}
+
+.smart-agent-size-scopes {
+    padding: 3px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    border: 1px solid #dde2e9;
+    border-radius: 12px;
+    background: #eef1f6;
+}
+
+.smart-agent-size-scopes button {
+    height: 29px;
+    min-width: 53px;
+    padding: 0 8px;
+    border: 0;
+    border-radius: 9px;
+    color: #667185;
+    background: transparent;
+    cursor: pointer;
+    font-size: 10.5px;
+    font-weight: 760;
+    white-space: nowrap;
+}
+
+.smart-agent-size-scopes button:hover {
+    color: #202530;
+}
+
+.smart-agent-size-scopes button.active {
+    color: #202530;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(28, 38, 58, .08);
+}
+
+.smart-agent-size-pane[hidden] {
+    display: none;
+}
+
+.smart-agent-size-auto,
+.smart-agent-size-custom {
+    margin: 9px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-self: start;
+    border: 1px solid #e3e7ed;
+    border-radius: 11px;
+    background: #f5f7fa;
+}
+
+.smart-agent-size-auto strong,
+.smart-agent-size-custom > strong {
+    font-size: 11px;
+    font-weight: 820;
+}
+
+.smart-agent-size-auto span,
+.smart-agent-size-custom > small {
+    color: #7e8797;
+    font-size: 10px;
+    line-height: 1.45;
+}
+
+.smart-agent-size-presets {
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(126px, .82fr) minmax(0, 1.18fr);
+}
+
+.smart-agent-size-list {
+    min-height: 0;
+    max-height: var(--smart-agent-size-list-height, 286px);
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: #bdc6d5 transparent;
+}
+
+.smart-agent-size-list + .smart-agent-size-list {
+    border-left: 1px solid #e3e6ec;
+}
+
+.smart-agent-size-list button {
+    width: 100%;
+    min-height: 40px;
+    padding: 7px 9px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    color: #718097;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+}
+
+.smart-agent-size-list button:hover {
+    color: #202530;
+    background: #f4f6f9;
+}
+
+.smart-agent-size-list button.active {
+    color: #202530;
+    background: #edf1f7;
+    border-color: #e4e8ee;
+}
+
+.smart-agent-size-list button span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 12px;
+    font-weight: 820;
+}
+
+.smart-agent-size-list button small {
+    min-width: 0;
+    overflow: hidden;
+    color: #8792a4;
+    font-size: 10px;
+    font-weight: 720;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.smart-agent-size-custom > div {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 12px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 6px;
+}
+
+.smart-agent-size-custom input {
+    width: 100%;
+    min-width: 0;
+    height: 34px;
+    padding: 0 8px;
+    border: 1px solid #dfe4eb;
+    border-radius: 8px;
+    outline: 0;
+    color: #202530;
+    background: #fff;
+    font: inherit;
+    font-size: 11px;
+    font-weight: 680;
+}
+
+.smart-agent-size-custom input:focus {
+    border-color: #8099ff;
+    box-shadow: 0 0 0 3px rgba(77, 114, 255, .09);
+}
+
+.smart-agent-size-custom > div > span {
+    color: #8a93a2;
+    text-align: center;
+}
+
+.smart-agent-size-custom button {
+    height: 34px;
+    padding: 0 11px;
+    border: 0;
+    border-radius: 8px;
+    color: #fff;
+    background: #252a34;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 780;
+}
+
+#smartAgentCustomHint.error {
+    color: #d64c4c;
+}
+
+.smart-agent-mode-picker {
+    position: relative;
+}
+
+.smart-agent-mode-picker[data-mode="image"] .smart-agent-mode-btn {
+    min-width: 58px;
+    cursor: default;
+}
+
+.smart-agent-mode-btn {
+    height: 34px;
+    min-width: 76px;
+    padding: 0 4px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    border: 0;
+    border-radius: 10px;
+    color: #252a34;
+    background: transparent;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 750;
+}
+
+.smart-agent-mode-btn:hover,
+.smart-agent-mode-picker.open .smart-agent-mode-btn {
+    background: #f1f2f5;
+}
+
+.smart-agent-mode-btn > svg,
+.smart-agent-mode-icons svg {
+    width: 17px;
+    height: 17px;
+    flex: none;
+}
+
+.smart-agent-mode-btn > svg:last-child {
+    width: 15px;
+    height: 15px;
+    transition: transform .16s ease;
+}
+
+.smart-agent-mode-picker.open .smart-agent-mode-btn > svg:last-child {
+    transform: rotate(180deg);
+}
+
+.smart-agent-mode-icons {
+    width: 18px;
+    height: 18px;
+    display: grid;
+    place-items: center;
+    color: #343a46;
+}
+
+.smart-agent-mode-icons [data-agent-mode-icon] {
+    display: none;
+}
+
+.smart-agent-mode-picker[data-mode="agent"] [data-agent-mode-icon="agent"],
+.smart-agent-mode-picker[data-mode="image"] [data-agent-mode-icon="image"],
+.smart-agent-mode-picker[data-mode="video"] [data-agent-mode-icon="video"] {
+    display: block;
+}
+
+.smart-agent-mode-menu {
+    position: absolute;
+    left: 0;
+    bottom: calc(100% + 10px);
+    z-index: 20;
+    width: 286px;
+    padding: 7px;
+    display: none;
+    border: 1px solid #e0e3e8;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 14px 38px rgba(24, 30, 44, .16);
+}
+
+.smart-agent-mode-picker.open .smart-agent-mode-menu {
+    display: block;
+}
+
+.smart-agent-mode-menu > button {
+    width: 100%;
+    min-height: 62px;
+    padding: 9px 10px;
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr) 18px;
+    align-items: center;
+    gap: 10px;
+    border: 0;
+    border-radius: 12px;
+    color: #737986;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+}
+
+.smart-agent-mode-menu > button:hover {
+    background: #f6f7f9;
+}
+
+.smart-agent-mode-menu > button.active {
+    color: #6157f2;
+    background: #f0efff;
+}
+
+.smart-agent-mode-menu > button > svg:first-child {
+    width: 21px;
+    height: 21px;
+}
+
+.smart-agent-mode-menu > button span,
+.smart-agent-mode-menu > button strong,
+.smart-agent-mode-menu > button small {
+    min-width: 0;
+    display: block;
+}
+
+.smart-agent-mode-menu > button strong {
+    color: #20242d;
+    font-size: 13px;
+    line-height: 1.25;
+}
+
+.smart-agent-mode-menu > button small {
+    margin-top: 3px;
+    color: #747c8a;
+    font-size: 10.5px;
+    line-height: 1.35;
+}
+
+.smart-agent-mode-check {
+    width: 17px;
+    height: 17px;
+    visibility: hidden;
+}
+
+.smart-agent-mode-menu > button.active .smart-agent-mode-check {
+    visibility: visible;
+}
+
+.smart-agent-analysis-model-picker {
+    position: relative;
+    min-width: 0;
+    flex: 1;
+}
+
+.smart-agent-analysis-model-btn {
+    width: 100%;
+    height: 34px;
+    max-width: 142px;
+    padding: 0 4px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    border: 0;
+    border-radius: 10px;
+    color: #252a34;
+    background: transparent;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 750;
+}
+
+.smart-agent-analysis-model-btn:hover,
+.smart-agent-analysis-model-picker.open .smart-agent-analysis-model-btn {
+    background: #f1f2f5;
+}
+
+.smart-agent-analysis-model-btn > svg {
+    width: 15px;
+    height: 15px;
+    flex: none;
+}
+
+.smart-agent-analysis-model-btn > svg:first-child,
+.smart-agent-size-btn > svg:first-child {
+    display: none;
+}
+
+.smart-agent-analysis-model-btn > span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.smart-agent-analysis-model-btn > svg:last-child {
+    transition: transform .16s ease;
+}
+
+.smart-agent-analysis-model-picker.open .smart-agent-analysis-model-btn > svg:last-child {
+    transform: rotate(180deg);
+}
+
+.smart-agent-analysis-model-menu {
+    position: fixed;
+    z-index: 80;
+    left: var(--smart-agent-model-left, 16px);
+    top: var(--smart-agent-model-top, 120px);
+    right: auto;
+    bottom: auto;
+    width: var(--smart-agent-model-width, 280px);
+    max-height: var(--smart-agent-model-max-height, 280px);
+    padding: 7px;
+    display: none;
+    overflow-y: auto;
+    border: 1px solid #e0e3e8;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 14px 38px rgba(24, 30, 44, .16);
+}
+
+.smart-agent-image-model-menu-head {
+    position: sticky;
+    z-index: 1;
+    top: -7px;
+    min-height: 40px;
+    margin: -7px -7px 3px;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    border-bottom: 1px solid #eceef2;
+    color: #20242d;
+    background: rgba(255, 255, 255, .98);
+}
+
+.smart-agent-image-model-menu-head strong { font-size: 12px; }
+.smart-agent-image-model-menu-head small { color: #8a909b; font-size: 10px; }
+
+.smart-agent-analysis-model-picker.open .smart-agent-analysis-model-menu {
+    display: grid;
+    gap: 2px;
+}
+
+.smart-agent-analysis-model-menu > button {
+    width: 100%;
+    min-height: 46px;
+    padding: 8px 10px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 18px;
+    align-items: center;
+    gap: 9px;
+    border: 0;
+    border-radius: 11px;
+    color: #737986;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+}
+
+.smart-agent-analysis-model-menu > button:hover {
+    background: #f6f7f9;
+}
+
+.smart-agent-analysis-model-menu > button.active {
+    color: #6157f2;
+    background: #f0efff;
+}
+
+.smart-agent-analysis-model-menu > button span,
+.smart-agent-analysis-model-menu > button strong,
+.smart-agent-analysis-model-menu > button small {
+    min-width: 0;
+    display: block;
+}
+
+.smart-agent-analysis-model-menu > button strong,
+.smart-agent-analysis-model-menu > button small {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.smart-agent-analysis-model-menu > button strong {
+    color: #20242d;
+    font-size: 12px;
+}
+
+.smart-agent-analysis-model-menu > button small {
+    margin-top: 3px;
+    color: #747c8a;
+    font-size: 10px;
+}
+
+.smart-agent-analysis-model-menu > button > svg {
+    width: 17px;
+    height: 17px;
+    visibility: hidden;
+}
+
+.smart-agent-analysis-model-menu > button.active > svg {
+    visibility: visible;
+}
+
+.smart-agent-analysis-model-status {
+    min-height: 38px;
+    padding: 9px 10px;
+    display: flex;
+    align-items: center;
+    color: #8a909b;
+    font-size: 10.5px;
+}
+
+.smart-agent-analysis-model-menu > button.smart-agent-analysis-model-retry > svg {
+    visibility: visible;
+}
+
+#smartAgentSendBtn {
+    width: 36px;
+    height: 36px;
+    flex: none;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    color: #fff;
+    background: #20242d;
+    cursor: pointer;
+}
+
+#smartAgentSendBtn svg {
+    width: 17px;
+    height: 17px;
+}
+
+#smartAgentSendBtn:disabled {
+    color: #c8ccd3;
+    background: #eceef2;
+    cursor: default;
+}
+
+.smart-agent-reopen {
+    position: absolute;
+    z-index: 56;
+    top: 22px;
+    right: 22px;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: #fff;
+    background: linear-gradient(135deg, #397bff, #8a52f5);
+    box-shadow: 0 8px 20px rgba(77, 114, 255, .3);
+    font-size: 18px;
+    line-height: 40px;
+    transition: transform .14s ease, box-shadow .14s ease;
+}
+
+.smart-agent-reopen:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 11px 25px rgba(77, 114, 255, .38);
+}
+
+@media (max-width: 900px) {
+    .smart-agent-reopen {
+        right: 14px;
+    }
+}
+
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) {
+    --smart-agent-border: #303643;
+    --smart-agent-muted: #9da6b5;
+    --smart-agent-panel: #171a20;
+    --smart-agent-soft: #242832;
+    --smart-agent-text: #eef1f6;
+}
+
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-header,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-composer,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-image-card,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-image-actions button,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-mode-menu,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-analysis-model-menu,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-size-popover,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-prompt-preview-head,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-prompt-preview-item {
+    color: #eef1f6;
+    background: #171a20;
+}
+
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-image-model-menu-head {
+    border-color: #343a47;
+    color: #eef1f6;
+    background: rgba(23, 26, 32, .98);
+}
+
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-header strong,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) #smartAgentInput {
+    color: #eef1f6;
+}
+
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-prompt-preview {
+    color: #eef1f6;
+    background: #171a20;
+}
+
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-prompt-preview-item span {
+    color: #9da6b5;
+}
+
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-message.user .smart-agent-bubble,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-reference,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-plan {
+    color: #e8ebf1;
+    background: #242832;
+    border-color: #343a47;
+}
+
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-tool-btn:hover,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-tool-btn.active,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-mode-btn:hover,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-mode-picker.open .smart-agent-mode-btn,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-mode-menu > button:hover,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-analysis-model-btn:hover,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-analysis-model-picker.open .smart-agent-analysis-model-btn,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-analysis-model-menu > button:hover,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-size-btn:hover,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-size-picker.open .smart-agent-size-btn {
+    color: #eef1f6;
+    background: #242832;
+}
+
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-mode-menu,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-analysis-model-menu,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-size-popover,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-size-head,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-size-list + .smart-agent-size-list,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-prompt-preview,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-prompt-preview-head,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-prompt-preview-item {
+    border-color: #343a47;
+}
+
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-mode-menu > button strong,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-analysis-model-menu > button strong,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-prompt-preview-head strong,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-prompt-preview-item strong,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-mode-btn,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-analysis-model-btn,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-size-btn,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-size-head,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-size-auto,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-size-custom {
+    color: #eef1f6;
+}
+
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-size-scopes,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-size-auto,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-size-custom,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-size-list button:hover,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-size-list button.active {
+    color: #eef1f6;
+    background: #242832;
+    border-color: #343a47;
+}
+
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-size-scopes button.active,
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-size-custom input {
+    color: #eef1f6;
+    background: #171a20;
+    border-color: #343a47;
+}
+
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-mode-menu > button.active {
+    color: #a7b2ff;
+    background: rgba(99, 102, 241, .18);
+}
+
+html:is([data-theme="dark"], .theme-dark, .studio-theme-dark) .smart-agent-analysis-model-menu > button.active {
+    color: #a7b2ff;
+    background: rgba(99, 102, 241, .18);
+}
+
+@media (max-width: 980px) {
+    body.smart-agent-enabled .shell {
+        width: 100vw;
+        max-width: 100vw;
+    }
+
+    .smart-agent-panel {
+        width: min(380px, 92vw);
+        box-shadow: -16px 0 42px rgba(17, 24, 39, .18);
+    }
+}

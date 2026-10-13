@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-studio-fit-scale="off">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/static/images/logo.png" type="image/png">
+    <title>灵感广场</title>
+    <script>
+        (function(){
+            try {
+                var theme = localStorage.getItem('studio_theme') || localStorage.getItem('canvas_theme') || 'light';
+                if(theme === 'dark') document.documentElement.classList.add('studio-theme-dark','theme-dark');
+            } catch(e) {}
+        })();
+    </script>
+    <script src="/static/vendor/js/lucide.js?v=2026.07.15.1784259302"></script>
+    <script src="/static/js/theme.js?v=2026.07.15.1784259302"></script>
+    <link rel="stylesheet" href="/static/css/theme.css?v=2026.07.15.1784259302">
+    <link rel="stylesheet" href="/static/css/inspiration.css?v=2026.07.15.1786609844">
+</head>
+<body>
+    <main class="inspiration-page">
+        <header class="inspiration-header">
+            <div class="inspiration-title-row">
+                <div>
+                    <p class="inspiration-kicker">LINGDRAW COMMUNITY</p>
+                    <h1>灵感</h1>
+                </div>
+                <div class="inspiration-summary" aria-live="polite">
+                    <i data-lucide="sparkles"></i>
+                    <span id="inspirationCount">正在加载灵感…</span>
+                </div>
+            </div>
+            <nav id="inspirationFilters" class="inspiration-filters" aria-label="灵感分类"></nav>
+        </header>
+
+        <section class="inspiration-content" aria-live="polite">
+            <div id="inspirationLoading" class="inspiration-state">
+                <i data-lucide="loader-circle" class="spin"></i>
+                <strong>正在打开灵感广场</strong>
+                <span>汇集灵绘用户分享的作品与提示词</span>
+            </div>
+            <div id="inspirationEmpty" class="inspiration-state" hidden>
+                <span class="inspiration-state-icon"><i data-lucide="lightbulb"></i></span>
+                <strong>这个分类还没有灵感</strong>
+                <span>在 GPT 对话里生成图片后，点击分享即可发布到这里。</span>
+            </div>
+            <div id="inspirationError" class="inspiration-state error" hidden>
+                <span class="inspiration-state-icon"><i data-lucide="circle-alert"></i></span>
+                <strong>灵感暂时没有加载出来</strong>
+                <button id="inspirationRetry" type="button">重新加载</button>
+            </div>
+            <div id="inspirationGallery" class="inspiration-gallery" aria-label="灵感作品瀑布流"></div>
+            <div id="inspirationSentinel" class="inspiration-sentinel" aria-hidden="true"></div>
+        </section>
+    </main>
+    <div id="inspirationToast" class="inspiration-toast" role="status" aria-live="polite"></div>
+    <script src="/static/js/inspiration.js?v=2026.07.15.1786688906"></script>
+</body>
+</html>

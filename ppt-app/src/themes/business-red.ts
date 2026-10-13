@@ -1,0 +1,38 @@
+import type { PresentationTheme } from "./types";
+
+export const businessRedTheme: PresentationTheme = {
+  id: "business-red",
+  name: "商务红",
+  nameEn: "Business Red",
+  description: "稳重招标风格，红色栏头与清晰价格层级。",
+  isDark: false,
+  colors: {
+    primary: "#A51F2D",
+    primaryDark: "#741722",
+    background: "#F4F1EB",
+    surface: "#FFFFFF",
+    surfaceAlt: "#EFEAE4",
+    textPrimary: "#24201E",
+    textSecondary: "#6E6763",
+    accent: "#C99762",
+    border: "#D8CCC2",
+    priceBackground: "#F7E4E5",
+    imageBackground: "#FFFFFF",
+    onPrimary: "#FFFFFF",
+    onPrimaryMuted: "#F5DDE0",
+    success: "#2E6B4E",
+  },
+  typography: {
+    title: "Microsoft YaHei",
+    body: "Microsoft YaHei",
+    number: "Arial",
+    fontFallbacks: { title: ["PingFang SC", "Noto Sans CJK SC", "sans-serif"], body: ["PingFang SC", "Noto Sans CJK SC", "sans-serif"], number: ["Helvetica Neue", "sans-serif"] },
+    titleWeight: 700,
+    bodyWeight: 400,
+    letterSpacing: 0,
+  },
+  radius: { card: 0, image: 0, badge: 0 },
+  border: { width: 0.8, opacity: 1 },
+  spacing: { density: "compact", scale: 1 },
+  decoration: { headerStyle: "solid", cardStyle: "bordered", priceStyle: "panel", imageStyle: "neutral", showTopBar: true, showFooterLine: true, showPageNumber: true, geometry: "line", shadow: "none" },
+};

@@ -1,0 +1,334 @@
+:root {
+    --brand-ai-blue: #3B82F6;
+    --brand-ai-purple: #7C3AED;
+    --brand-cyan: #22D3EE;
+    --brand-dark: #0F172A;
+    --brand-gray: #475569;
+    --brand-light-gray: #CBD5E1;
+    --brand-background: #F8FAFC;
+    --brand-orange: #F59E0B;
+    --brand-green: #10B981;
+    --brand-red: #EF4444;
+    --brand-gradient: linear-gradient(135deg, #7C3AED 0%, #3B82F6 52%, #22D3EE 100%);
+    --accent: var(--brand-ai-blue);
+    --primary: var(--brand-ai-blue);
+    --strong: var(--brand-ai-blue);
+    --strong-text: #FFFFFF;
+    --success: var(--brand-green);
+    --warning: var(--brand-orange);
+    --danger: var(--brand-red);
+    --bg: var(--brand-background);
+    --bg-base: var(--brand-background);
+    --card: #FFFFFF;
+    --panel: #FFFFFF;
+    --text: var(--brand-dark);
+    --text-main: var(--brand-dark);
+    --muted: var(--brand-gray);
+    --line: var(--brand-light-gray);
+    --line-strong: var(--brand-gray);
+    --chat-strong: var(--brand-ai-blue);
+    --chat-strong-text: #FFFFFF;
+    --chat-strong-hover: var(--brand-ai-purple);
+}
+
+::selection {
+    background: var(--brand-cyan);
+    color: var(--brand-dark);
+}
+
+:where(button, a, input, select, textarea, [tabindex]):focus-visible {
+    outline: 2px solid var(--brand-cyan) !important;
+    outline-offset: 2px !important;
+}
+
+input,
+select,
+textarea {
+    caret-color: var(--brand-ai-blue);
+}
+
+input[type="checkbox"],
+input[type="radio"],
+input[type="range"] {
+    accent-color: var(--brand-ai-blue);
+}
+
+html:not(.studio-theme-dark):not(.theme-dark),
+html:not(.studio-theme-dark):not(.theme-dark) body,
+body:not(.studio-theme-dark):not(.theme-dark) {
+    color-scheme: light;
+    background-color: var(--brand-background) !important;
+    color: var(--brand-dark) !important;
+}
+
+body:not(.studio-theme-dark):not(.theme-dark) :is(
+    .console-card,
+    .nano-input,
+    .upload-item,
+    .result-frame,
+    .masonry-item,
+    .work-panel,
+    .setting-row,
+    .tool-panel,
+    .control-panel,
+    .model-panel,
+    .engine-panel,
+    .gate-panel,
+    .topbar,
+    .composer,
+    .composer-body,
+    .history-popover,
+    .thread-item,
+    .sidebar,
+    .preview,
+    .panel
+) {
+    border-color: rgba(203, 213, 225, .78) !important;
+}
+
+body:not(.studio-theme-dark):not(.theme-dark) :is(input, select, textarea):focus {
+    border-color: var(--brand-ai-blue) !important;
+    box-shadow: 0 0 0 3px rgba(34, 211, 238, .14) !important;
+}
+
+:is(
+    .glass-btn,
+    .run-btn,
+    .send-btn,
+    .primary-btn,
+    .btn-primary,
+    .action-btn.primary-btn,
+    .action-btn.save-btn
+) {
+    background: var(--brand-ai-blue) !important;
+    background-color: var(--brand-ai-blue) !important;
+    border-color: var(--brand-ai-blue) !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 8px 22px rgba(59, 130, 246, .20) !important;
+}
+
+:is(
+    .glass-btn,
+    .run-btn,
+    .send-btn,
+    .primary-btn,
+    .btn-primary,
+    .action-btn.primary-btn,
+    .action-btn.save-btn
+):hover:not(:disabled) {
+    background: var(--brand-ai-purple) !important;
+    background-color: var(--brand-ai-purple) !important;
+    border-color: var(--brand-ai-purple) !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 10px 26px rgba(124, 58, 237, .24) !important;
+}
+
+:is(
+    .nav-item.active,
+    .side-pill.active,
+    .model-option.active,
+    .kind-toggle button.active,
+    .tab-btn.active,
+    .seg-btn.active,
+    .segment-btn.active,
+    .filter-btn.active,
+    .tool-btn.active
+) {
+    background: var(--brand-ai-blue) !important;
+    background-color: var(--brand-ai-blue) !important;
+    border-color: var(--brand-ai-blue) !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 8px 20px rgba(59, 130, 246, .18) !important;
+}
+
+.ios-switch input:checked + .ios-slider {
+    background: var(--brand-ai-blue) !important;
+    border-color: var(--brand-ai-blue) !important;
+    box-shadow: 0 0 0 3px rgba(34, 211, 238, .14) !important;
+}
+
+.logo-ring {
+    border-color: transparent !important;
+}
+
+.sidebar-account-avatar {
+    background: var(--brand-gradient) !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 8px 18px rgba(59, 130, 246, .22);
+}
+
+.sidebar-account-dot {
+    background: var(--brand-green) !important;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, .14) !important;
+}
+
+.sidebar-account-logout:hover,
+.sidebar-account-logout:focus-visible {
+    background: rgba(239, 68, 68, .12) !important;
+    color: var(--brand-red) !important;
+}
+
+:is(.is-saved, .status-success, .success-badge) {
+    background-color: var(--brand-green) !important;
+    border-color: var(--brand-green) !important;
+    color: #FFFFFF !important;
+}
+
+:is(.status-warning, .warning-badge) {
+    color: var(--brand-orange) !important;
+}
+
+:is(.danger-btn, .status-error, .error-badge) {
+    color: var(--brand-red) !important;
+    border-color: rgba(239, 68, 68, .38) !important;
+}
+
+html.studio-theme-dark,
+html.theme-dark,
+html.studio-theme-dark body,
+html.theme-dark body,
+body.studio-theme-dark,
+body.theme-dark {
+    --accent: var(--brand-ai-blue);
+    --primary: var(--brand-ai-blue);
+    --strong: var(--brand-ai-blue);
+    --strong-text: #FFFFFF;
+    --bg: var(--brand-dark);
+    --bg-base: var(--brand-dark);
+    --card: rgba(71, 85, 105, .22);
+    --panel: rgba(71, 85, 105, .22);
+    --text: var(--brand-background);
+    --text-main: var(--brand-background);
+    --muted: var(--brand-light-gray);
+    --line: rgba(203, 213, 225, .18);
+    --line-strong: rgba(203, 213, 225, .34);
+    --chat-bg: var(--brand-dark);
+    --chat-panel: rgba(71, 85, 105, .24);
+    --chat-panel-2: rgba(71, 85, 105, .16);
+    --chat-line: rgba(203, 213, 225, .18);
+    --chat-line-2: rgba(203, 213, 225, .30);
+    --chat-text: var(--brand-background);
+    --chat-muted: var(--brand-light-gray);
+    --chat-strong: var(--brand-ai-blue);
+    --chat-strong-text: #FFFFFF;
+    --chat-strong-hover: var(--brand-ai-purple);
+    color-scheme: dark;
+    background-color: var(--brand-dark) !important;
+    color: var(--brand-background) !important;
+}
+
+html.studio-theme-dark body :is(
+    .app-shell,
+    .stage,
+    .chat-shell,
+    .messages,
+    .board,
+    .shell
+),
+html.theme-dark body :is(.app-shell, .stage, .chat-shell, .messages, .board, .shell),
+body.studio-theme-dark :is(.app-shell, .stage, .chat-shell, .messages, .board, .shell),
+body.theme-dark :is(.app-shell, .stage, .chat-shell, .messages, .board, .shell) {
+    background-color: var(--brand-dark) !important;
+    border-color: rgba(203, 213, 225, .16) !important;
+}
+
+html.studio-theme-dark body :is(
+    .console-card,
+    .nano-input,
+    .upload-item,
+    .result-frame,
+    .masonry-item,
+    .work-panel,
+    .setting-row,
+    .tool-panel,
+    .control-panel,
+    .model-panel,
+    .engine-panel,
+    .gate-panel,
+    .topbar,
+    .composer,
+    .composer-body,
+    .history-popover,
+    .thread-item,
+    .sidebar,
+    .preview,
+    .panel
+),
+body.studio-theme-dark :is(
+    .console-card,
+    .nano-input,
+    .upload-item,
+    .result-frame,
+    .masonry-item,
+    .work-panel,
+    .setting-row,
+    .tool-panel,
+    .control-panel,
+    .model-panel,
+    .engine-panel,
+    .gate-panel,
+    .topbar,
+    .composer,
+    .composer-body,
+    .history-popover,
+    .thread-item,
+    .sidebar,
+    .preview,
+    .panel
+),
+html.theme-dark body :is(
+    .console-card,
+    .nano-input,
+    .upload-item,
+    .result-frame,
+    .masonry-item,
+    .work-panel,
+    .setting-row,
+    .tool-panel,
+    .control-panel,
+    .model-panel,
+    .engine-panel,
+    .gate-panel,
+    .topbar,
+    .composer,
+    .composer-body,
+    .history-popover,
+    .thread-item,
+    .sidebar,
+    .preview,
+    .panel
+),
+body.theme-dark :is(
+    .console-card,
+    .nano-input,
+    .upload-item,
+    .result-frame,
+    .masonry-item,
+    .work-panel,
+    .setting-row,
+    .tool-panel,
+    .control-panel,
+    .model-panel,
+    .engine-panel,
+    .gate-panel,
+    .topbar,
+    .composer,
+    .composer-body,
+    .history-popover,
+    .thread-item,
+    .sidebar,
+    .preview,
+    .panel
+) {
+    background-color: rgba(71, 85, 105, .22) !important;
+    border-color: rgba(203, 213, 225, .18) !important;
+    color: var(--brand-background) !important;
+}
+
+html.studio-theme-dark body :is(input, select, textarea):focus,
+html.theme-dark body :is(input, select, textarea):focus,
+body.studio-theme-dark :is(input, select, textarea):focus,
+body.theme-dark :is(input, select, textarea):focus {
+    border-color: var(--brand-ai-blue) !important;
+    box-shadow: 0 0 0 3px rgba(34, 211, 238, .14) !important;
+}

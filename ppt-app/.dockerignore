@@ -1,0 +1,12 @@
+/node_modules
+/.next
+/.git
+/storage
+/output
+/.qa
+/.tmp
+*.log
+*.tsbuildinfo
+.env*
+!.env.example
+design-qa*.png

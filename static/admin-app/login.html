@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>灵绘 · 管理员登录</title>
+  <link rel="stylesheet" href="/static/admin-app/admin.css">
+</head>
+<body class="auth-body" data-admin-page="login">
+  <video class="auth-background" autoplay loop muted playsinline aria-hidden="true" src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260328_105406_16f4600d-7a92-4292-b96e-b19156c7830a.mp4"></video>
+  <div class="auth-overlay" aria-hidden="true"></div>
+  <main class="auth-shell">
+    <section class="auth-brand">
+      <img src="/static/images/lingdraw-brand-white-text.png" alt="灵绘 LingDraw">
+      <span>管理中心</span>
+    </section>
+    <section class="auth-card">
+      <div class="auth-card-head">
+        <div>
+          <div class="eyebrow" id="authEyebrow">ADMIN ACCESS</div>
+          <h1 id="authTitle">管理员登录</h1>
+          <p id="authDescription">使用独立管理员账号进入用户与额度管理后台。</p>
+        </div>
+        <span class="live-dot" aria-hidden="true"></span>
+      </div>
+      <form id="adminAuthForm">
+        <label>管理员账号<input id="adminUsername" autocomplete="username" minlength="2" maxlength="40" required></label>
+        <label>密码<input id="adminPassword" type="password" autocomplete="current-password" minlength="8" required></label>
+        <label id="confirmRow" hidden>确认密码<input id="adminConfirm" type="password" autocomplete="new-password" minlength="8"></label>
+        <div id="authMessage" class="form-message" role="status"></div>
+        <button id="authSubmit" class="primary-btn" type="submit">登录管理后台</button>
+      </form>
+      <a class="back-link" href="/login">返回普通用户登录</a>
+    </section>
+  </main>
+  <script src="/static/admin-app/admin.js"></script>
+</body>
+</html>

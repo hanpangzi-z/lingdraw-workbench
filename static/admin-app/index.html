@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>灵绘 · 管理中心</title>
+  <link rel="stylesheet" href="/static/admin-app/admin.css?v=admin-model-pricing-scrollbar-20260818-1">
+</head>
+<body data-admin-page="dashboard">
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <a class="sidebar-brand" href="/admin" aria-label="灵绘管理中心"><img src="/static/images/lingdraw-brand-black-text.png" alt="灵绘 LingDraw"><span>管理中心</span></a>
+      <nav>
+        <button class="nav-item active" data-section="users"><span class="nav-icon">用</span>用户与额度</button>
+        <button class="nav-item" data-section="shares"><span class="nav-icon">享</span>分享统计</button>
+        <button class="nav-item" data-section="analytics"><span class="nav-icon">析</span>统计分析</button>
+        <button class="nav-item" data-open-pricing><span class="nav-icon">价</span>模型单价</button>
+        <button class="nav-item" data-open-account><span class="nav-icon">管</span>管理员账号</button>
+      </nav>
+      <div class="sidebar-account"><div class="admin-avatar" aria-hidden="true">管</div><span id="adminName">管理员</span><button id="adminLogout">退出</button></div>
+    </aside>
+    <main class="admin-main">
+      <div id="usersSection" class="admin-section">
+        <header class="page-head">
+          <div><div class="eyebrow">USER OPERATIONS</div><h1>用户与额度管理</h1><p>审核账号，监测积分、任务次数和实际产出。</p></div>
+          <div class="head-actions"><button class="ghost-btn" id="exportUsers">导出用户汇总</button><button class="ghost-btn" id="exportUsage">导出任务明细</button></div>
+        </header>
+
+      <section class="range-bar">
+        <div class="range-presets"><button data-range="today">今天</button><button data-range="7" class="active">近 7 天</button><button data-range="30">近 30 天</button><button data-range="all">全部</button></div>
+        <div class="date-range"><input id="fromDate" type="date"><span>至</span><input id="toDate" type="date"><button id="applyDate">应用</button></div>
+      </section>
+
+      <section class="metric-grid">
+        <article><span>用户总数</span><strong id="metricUsers">0</strong><small id="metricUserStatus">待审核 0 · 已禁用 0</small></article>
+        <article><span>可用积分</span><strong id="metricAvailable">0</strong><small id="metricReserved">预占 0</small></article>
+        <article><span>成功任务</span><strong id="metricSuccess">0</strong><small id="metricFailed">失败 0</small></article>
+        <article><span>积分消耗</span><strong id="metricPoints">0</strong><small id="metricOutputs">图片产出 0</small></article>
+      </section>
+
+      <section class="category-grid">
+        <article><span>图片任务</span><strong id="categoryImage">0</strong><small>按实际模型计价</small></article>
+        <article><span>视频任务</span><strong id="categoryVideo">0</strong><small>按实际模型计价</small></article>
+        <article><span>聊天任务</span><strong id="categoryChat">0</strong><small>按实际模型计价</small></article>
+        <article><span>工作流任务</span><strong id="categoryWorkflow">0</strong><small>按实际模型或默认价计价</small></article>
+      </section>
+
+      <section class="table-card feature-card">
+        <div class="table-tools">
+          <div><h2>功能积分分布</h2><p>按实际使用入口和具体功能汇总当前时间范围内的任务与积分。</p></div>
+        </div>
+        <div id="featureUsageGrid" class="feature-usage-grid"></div>
+        <div id="emptyFeatures" class="empty-state" hidden>当前时间范围内没有积分使用记录</div>
+      </section>
+
+      <section class="table-card">
+        <div class="table-tools">
+          <div><h2>用户列表</h2><p id="userCountLabel">共 0 位用户</p></div>
+          <div class="filters"><input id="userSearch" placeholder="搜索用户名"><select id="statusFilter"><option value="">全部状态</option><option value="pending">待审核</option><option value="enabled">已启用</option><option value="disabled">已禁用</option></select><select id="roleFilter"><option value="">全部角色</option><option value="super_admin">超级管理员</option><option value="admin">管理员</option><option value="user">用户</option></select><button id="refreshUsers" class="ghost-btn">刷新</button></div>
+        </div>
+        <div class="table-wrap">
+          <table><thead><tr><th>用户</th><th>角色</th><th>状态</th><th>积分</th><th>图片</th><th>视频</th><th>聊天</th><th>工作流</th><th>失败</th><th>最后活跃</th><th>操作</th></tr></thead><tbody id="usersBody"></tbody></table>
+        </div>
+        <div id="emptyUsers" class="empty-state" hidden>没有符合条件的用户</div>
+      </section>
+
+        <section class="table-card">
+          <div class="table-tools">
+            <div><h2>积分使用明细</h2><p id="usageCountLabel">最近 0 条记录</p></div>
+            <div class="filters">
+              <input id="usageSearch" placeholder="搜索用户名">
+              <select id="usageCategoryFilter"><option value="">全部类别</option><option value="image">图片</option><option value="video">视频</option><option value="chat">对话</option><option value="workflow">工作流</option></select>
+              <select id="usageStatusFilter"><option value="">全部结果</option><option value="reserved">处理中</option><option value="succeeded">成功</option><option value="failed">失败</option><option value="refunded">已退还</option></select>
+              <button id="refreshUsage" class="ghost-btn">刷新</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="usage-table"><thead><tr><th>时间</th><th>用户</th><th>使用功能</th><th>类别</th><th>模型</th><th>状态</th><th>产出</th><th>单价</th><th>实扣积分</th><th>任务 / 失败原因</th></tr></thead><tbody id="usageBody"></tbody></table>
+          </div>
+          <div id="emptyUsage" class="empty-state" hidden>没有符合条件的积分记录</div>
+        </section>
+      </div>
+
+      <div id="sharesSection" class="admin-section" hidden>
+        <header class="page-head">
+          <div><div class="eyebrow">SHARE ANALYTICS</div><h1>设计师分享统计</h1><p>按自然月查看每位设计师发布到灵感广场的次数。</p></div>
+          <div class="head-actions"><button class="ghost-btn" id="exportShares">导出当月统计</button></div>
+        </header>
+
+        <section class="share-control-bar" aria-label="分享统计筛选">
+          <div class="month-switcher">
+            <button id="previousShareMonth" type="button" aria-label="上一个月">‹</button>
+            <label for="shareMonth">统计月份</label>
+            <input id="shareMonth" type="month">
+            <button id="nextShareMonth" type="button" aria-label="下一个月">›</button>
+          </div>
+          <div class="share-filters">
+            <input id="shareSearch" type="search" placeholder="搜索设计师" aria-label="搜索设计师">
+            <button id="refreshShares" class="ghost-btn" type="button">刷新</button>
+          </div>
+        </section>
+
+        <section class="metric-grid share-metric-grid">
+          <article><span>本月分享</span><strong id="shareTotal">0</strong><small id="shareMonthLabel">—</small></article>
+          <article><span>有分享设计师</span><strong id="shareActiveDesigners">0</strong><small id="shareDesignerTotal">共 0 位设计师</small></article>
+          <article><span>人均分享</span><strong id="shareAverage">0</strong><small>按全部设计师计算</small></article>
+          <article><span>当月最高</span><strong id="shareTopCount">0</strong><small id="shareTopDesigner">暂无分享</small></article>
+        </section>
+
+        <section class="share-activity-panel" aria-labelledby="shareActivityTitle">
+          <div class="share-activity-head"><div><h2 id="shareActivityTitle">本月分享节奏</h2><p>每日发布次数</p></div><strong id="sharePeakLabel">峰值 0 次</strong></div>
+          <div id="shareDailyChart" class="share-daily-chart" role="img" aria-label="每日分享次数柱状图"></div>
+        </section>
+
+        <section class="table-card share-table-card">
+          <div class="table-tools">
+            <div><h2>设计师月度明细</h2><p id="shareCountLabel">共 0 位设计师</p></div>
+          </div>
+          <div class="table-wrap">
+            <table class="share-table"><thead><tr><th>排名</th><th>设计师</th><th>账号状态</th><th>本月分享</th><th>占本月分享</th><th>分享分类</th><th>最后分享</th></tr></thead><tbody id="sharesBody"></tbody></table>
+          </div>
+          <div id="emptyShares" class="empty-state" hidden>没有符合条件的设计师</div>
+        </section>
+      </div>
+
+      <div id="analyticsSection" class="admin-section" hidden>
+        <header class="page-head">
+          <div><div class="eyebrow">DATA INTELLIGENCE</div><h1>综合统计分析</h1><p>按上海时区查看任务、产出、积分、模型和失败趋势。</p></div>
+          <div class="head-actions"><button class="ghost-btn" id="refreshAnalytics">刷新数据</button></div>
+        </header>
+
+        <section class="range-bar analytics-range-bar">
+          <div class="range-presets analytics-presets"><button data-analytics-range="today">今天</button><button data-analytics-range="7" class="active">近 7 天</button><button data-analytics-range="30">近 30 天</button></div>
+          <div class="date-range"><input id="analyticsFromDate" type="date" aria-label="统计开始日期"><span>至</span><input id="analyticsToDate" type="date" aria-label="统计结束日期"><button id="applyAnalyticsDate">应用</button></div>
+        </section>
+
+        <div id="analyticsLoading" class="analytics-state">正在汇总统计数据…</div>
+        <div id="analyticsError" class="analytics-state analytics-state-error" hidden><strong>统计数据加载失败</strong><span id="analyticsErrorMessage">请稍后重试</span><button id="retryAnalytics" class="ghost-btn" type="button">重新加载</button></div>
+        <div id="analyticsForbidden" class="analytics-state analytics-state-error" hidden><strong>没有统计分析权限</strong><span>只有管理员和超级管理员可以查看此页面。</span></div>
+        <div id="analyticsEmpty" class="analytics-state" hidden><strong>当前时间范围暂无使用记录</strong><span>可以调整日期后重新查询。</span></div>
+
+        <div id="analyticsContent" hidden>
+          <section class="analytics-kpi-grid">
+            <article class="analytics-kpi"><span>活跃用户</span><strong id="analyticsActiveUsers">0</strong><small id="analyticsActiveUsersChange" class="analytics-change is-flat">与上期持平</small></article>
+            <article class="analytics-kpi"><span>成功任务</span><strong id="analyticsSucceeded">0</strong><small id="analyticsSucceededChange" class="analytics-change is-flat">与上期持平</small></article>
+            <article class="analytics-kpi"><span>产出数量</span><strong id="analyticsOutputs">0</strong><small id="analyticsOutputsChange" class="analytics-change is-flat">与上期持平</small></article>
+            <article class="analytics-kpi"><span>实扣积分</span><strong id="analyticsCharged">0</strong><small id="analyticsChargedChange" class="analytics-change is-flat">与上期持平</small></article>
+            <article class="analytics-kpi"><span>成功率</span><strong id="analyticsSuccessRate">0%</strong><small id="analyticsSuccessRateChange" class="analytics-change is-flat">与上期持平</small></article>
+            <article class="analytics-kpi"><span>处理中任务</span><strong id="analyticsProcessing">0</strong><small id="analyticsProcessingChange" class="analytics-change is-flat">与上期持平</small></article>
+            <article class="analytics-kpi"><span>预占积分</span><strong id="analyticsReserved">0</strong><small id="analyticsReservedChange" class="analytics-change is-flat">与上期持平</small></article>
+          </section>
+
+          <section class="analytics-notes" aria-label="统计口径说明">
+            <p class="analytics-note"><strong>任务数与产出数：</strong>一次成功任务可能返回多张图片，因此产出数量可能大于成功任务数。</p>
+            <p class="analytics-note"><strong>预占与实扣：</strong>预占积分是处理中任务暂时锁定的额度，不计入实际消耗；任务完成后才形成实扣积分。</p>
+          </section>
+
+          <section class="analytics-panel analytics-trend-panel">
+            <div class="analytics-panel-head"><div><h2>使用趋势</h2><p>按天展示当前时间范围内的运行状态</p></div><div class="analytics-switch"><button data-analytics-metric="tasks" class="active">任务</button><button data-analytics-metric="output">产出</button><button data-analytics-metric="points">积分</button></div></div>
+            <div class="analytics-chart-wrap"><svg id="analyticsTrendChart" class="analytics-chart" viewBox="0 0 960 300" role="img" aria-label="统计趋势图"></svg></div>
+          </section>
+
+          <section class="analytics-split-grid">
+            <article class="analytics-panel"><div class="analytics-panel-head"><div><h2>功能排行</h2><p>按使用入口和操作名称汇总</p></div></div><div class="table-wrap"><table class="analytics-table"><thead><tr><th>功能</th><th>任务</th><th>产出</th><th>积分</th><th>成功率</th></tr></thead><tbody id="analyticsFeatureBody"></tbody></table></div></article>
+            <article class="analytics-panel"><div class="analytics-panel-head"><div><h2>模型排行</h2><p>空模型统一显示“未记录”</p></div></div><div class="table-wrap"><table class="analytics-table"><thead><tr><th>模型</th><th>调用</th><th>成功 / 失败</th><th>产出</th><th>积分</th><th>平均耗时</th></tr></thead><tbody id="analyticsModelBody"></tbody></table></div></article>
+          </section>
+
+          <section class="analytics-split-grid analytics-bottom-grid">
+            <article class="analytics-panel"><div class="analytics-panel-head"><div><h2>用户排行</h2><p>按实扣积分从高到低</p></div></div><div class="table-wrap"><table class="analytics-table"><thead><tr><th>用户</th><th>任务</th><th>产出</th><th>积分</th><th>失败</th></tr></thead><tbody id="analyticsUserBody"></tbody></table></div></article>
+            <article class="analytics-panel"><div class="analytics-panel-head"><div><h2>失败分析</h2><p>错误样例已截断并脱敏</p></div></div><div id="analyticsFailureList" class="analytics-failure-list"></div></article>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <dialog id="creditDialog"><form method="dialog" class="dialog-card" id="creditForm"><button class="dialog-close" type="button" data-close-dialog="creditDialog">×</button><div class="eyebrow">CREDIT LEDGER</div><h2>调整用户积分</h2><p id="creditUserLabel"></p><label>调整方式<select id="creditMode"><option value="add">增加积分</option><option value="subtract">扣减积分</option><option value="set">设置余额</option></select></label><label>积分数量<input id="creditAmount" type="number" min="0" step="1" required></label><label>备注<input id="creditReason" maxlength="200" placeholder="可选"></label><div class="dialog-actions"><button type="button" data-close-dialog="creditDialog" class="ghost-btn">取消</button><button type="submit" value="default" class="primary-btn">确认调整</button></div></form></dialog>
+
+  <dialog id="pricingDialog"><form method="dialog" class="dialog-card pricing-dialog-card" id="pricingForm"><button class="dialog-close" type="button" data-close-dialog="pricingDialog">×</button><div class="eyebrow">MODEL PRICING</div><h2>模型积分单价</h2><p class="pricing-description">读取 API 设置中已经拉取并保存的模型；任务优先使用模型单价。</p><div id="modelPricingList" class="model-pricing-list" tabindex="0" aria-label="模型积分单价列表"><div class="model-pricing-empty">正在读取模型…</div></div><details class="pricing-defaults"><summary>未匹配模型与工作流默认价</summary><div class="pricing-grid"><label>图片 / 张<input data-category-price="image" type="number" min="0" required></label><label>视频 / 次<input data-category-price="video" type="number" min="0" required></label><label>聊天 / 次<input data-category-price="chat" type="number" min="0" required></label><label>工作流 / 次<input data-category-price="workflow" type="number" min="0" required></label></div></details><div class="dialog-actions"><button type="button" data-close-dialog="pricingDialog" class="ghost-btn">取消</button><button type="submit" value="default" class="primary-btn">保存模型单价</button></div></form></dialog>
+
+  <dialog id="accountDialog"><form method="dialog" class="dialog-card" id="accountForm"><button class="dialog-close" type="button" data-close-dialog="accountDialog">×</button><div class="eyebrow">ADMIN ACCOUNT</div><h2>管理员账号设置</h2><label>管理员用户名<input id="accountUsername" minlength="2" maxlength="40" required></label><label>当前密码<input id="accountCurrentPassword" type="password" minlength="8" required></label><label>新密码<input id="accountNewPassword" type="password" minlength="8" placeholder="不修改请留空"></label><div id="accountMessage" class="dialog-message" role="status" aria-live="polite"></div><div class="dialog-actions"><button type="button" data-close-dialog="accountDialog" class="ghost-btn">取消</button><button type="submit" value="default" class="primary-btn">保存设置</button></div></form></dialog>
+
+  <div id="toast" class="toast" hidden></div>
+  <script src="/static/admin-app/admin.js?v=admin-model-pricing-scrollbar-20260818-1"></script>
+</body>
+</html>

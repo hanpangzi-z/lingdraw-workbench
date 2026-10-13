@@ -1,0 +1,563 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model ImageGenerationJob {
+  id        String  @id @db.VarChar(36)
+  userId    String  @db.VarChar(191)
+  payload   Json
+  started   Boolean @default(false)
+  updatedAt BigInt
+  @@index([userId, updatedAt])
+}
+
+model UploadSession {
+  id        String @id @db.VarChar(36)
+  userId    String @db.VarChar(191)
+  payload   Json
+  updatedAt BigInt
+  completed Boolean @default(false)
+  @@index([userId, completed, updatedAt])
+}
+
+enum ProjectStatus {
+  draft
+  ready
+  exported
+  archived
+}
+
+enum AssetType {
+  source_file
+  product_image
+  logo
+  generated_ppt
+  thumbnail
+}
+
+enum ProjectAssetRole {
+  source
+  product_image
+  logo
+  export
+  thumbnail
+}
+
+enum GlobalProductStatus {
+  active
+  inactive
+  archived
+}
+
+enum ProductAssetRole {
+  primary
+  secondary
+  detail
+  package
+  manual
+}
+
+enum TemplateStatus {
+  draft
+  published
+  archived
+}
+
+enum ResourceScope {
+  system
+  personal
+  organization
+}
+
+model User {
+  id                String                 @id @default(cuid()) @db.VarChar(191)
+  externalUserId    String?                @unique @db.VarChar(191)
+  username          String? @db.LongText
+  email             String                 @unique @db.VarChar(191)
+  passwordHash      String? @db.LongText
+  name              String? @db.LongText
+  avatarUrl         String? @db.LongText
+  role              String                 @default(dbgenerated("(_utf8mb4\\'user\\')")) @db.LongText
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
+  projects          Project[]
+  assets            Asset[]
+  versions          ProjectVersion[]       @relation("VersionAuthor")
+  activities        ProjectActivity[]
+  globalProducts    GlobalProduct[]
+  productCategories ProductCategory[]
+  brands            Brand[]
+  deliveryProfiles  DeliveryProfile[]
+  productVersions   GlobalProductVersion[] @relation("GlobalProductVersionAuthor")
+  templates         TemplateDefinition[]
+  themes            ThemeDefinition[]
+  brandKits         BrandKit[]
+  templateFavorites TemplateFavorite[]
+}
+
+model Project {
+  id               String                   @id @default(cuid()) @db.VarChar(191)
+  userId           String @db.VarChar(191)
+  name             String @db.VarChar(191)
+  description      String? @db.LongText
+  brand            String? @db.LongText
+  title            String? @db.LongText
+  subtitle         String? @db.LongText
+  tierName         String? @db.LongText
+  edition          String? @db.LongText
+  serviceLine      String? @db.LongText
+  version          String? @db.LongText
+  logoUrl          String? @db.LongText
+  status           ProjectStatus            @default(draft)
+  year             Int?
+  region           String? @db.LongText
+  priceTier        String? @db.LongText
+  projectType      String?                  @default(dbgenerated("(_utf8mb4\\'product-catalog\\')")) @db.LongText
+  templateId       String                   @default(dbgenerated("(_utf8mb4\\'business-red\\')")) @db.LongText
+  themeId          String                   @default(dbgenerated("(_utf8mb4\\'business-red\\')")) @db.LongText
+  thumbnailUrl     String? @db.LongText
+  thumbnailAssetId String? @db.LongText
+  thumbnailDirty   Boolean                  @default(true)
+  revision         Int                      @default(1)
+  productCount     Int                      @default(0)
+  slideCount       Int                      @default(0)
+  categoryCount    Int                      @default(0)
+  cachedSlidePlan  Json?
+  dataHash         String? @db.LongText
+  batchConfig      Json?
+  lastOpenedAt     DateTime                 @default(now())
+  deletedAt        DateTime?
+  createdAt        DateTime                 @default(now())
+  updatedAt        DateTime                 @updatedAt
+  user             User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  products         ProjectProductSnapshot[]
+  design           ProjectDesign?
+  editorState      ProjectEditorState?
+  sourceFiles      SourceFile[]
+  assets           ProjectAsset[]
+  versions         ProjectVersion[]
+  exports          ExportRecord[]
+  activities       ProjectActivity[]
+
+  @@index([userId, updatedAt])
+  @@index([userId, deletedAt, updatedAt])
+  @@index([userId, name])
+}
+
+model ProjectProductSnapshot {
+  id                   String         @id @default(cuid()) @db.VarChar(191)
+  clientId             String @db.VarChar(191)
+  projectId            String @db.VarChar(191)
+  globalProductId      String? @db.VarChar(191)
+  globalProductVersion Int?
+  productNumber        String @db.LongText
+  sku                  String @db.VarChar(191)
+  packageCode          String @db.LongText
+  name                 String @db.LongText
+  items                Json
+  marketPrice          Decimal?       @db.Decimal(12, 2)
+  salePrice            Decimal?       @db.Decimal(12, 2)
+  delivery             Json
+  category             String @db.LongText
+  region               String? @db.LongText
+  priceTier            String? @db.LongText
+  packageType          String? @db.LongText
+  customerGroup        String? @db.LongText
+  featured             Boolean        @default(false)
+  sortOrder            Int
+  primaryImageAssetId  String? @db.VarChar(191)
+  imageAssetIds        Json?
+  imageUrls            Json?
+  imageMetadata        Json?
+  rawData              Json?
+  deliveryRaw          String? @db.LongText
+  deliveryNormalized   String? @db.LongText
+  aiMetadata           Json?
+  sources              Json?
+  importMetadata       Json?
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+  snapshotTakenAt      DateTime       @default(now())
+  syncIgnoredAt        DateTime?
+  project              Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  primaryImageAsset    Asset?         @relation("PrimaryProductImage", fields: [primaryImageAssetId], references: [id], onDelete: SetNull)
+  globalProduct        GlobalProduct? @relation(fields: [globalProductId], references: [id], onDelete: SetNull)
+
+  @@unique([projectId, clientId])
+  @@index([projectId, sortOrder])
+  @@index([projectId, sku])
+  @@index([globalProductId, globalProductVersion])
+  @@index([primaryImageAssetId])
+  @@map("Product")
+}
+
+model GlobalProduct {
+  id                   String                   @id @default(cuid()) @db.VarChar(191)
+  ownerId              String @db.VarChar(191)
+  sku                  String? @db.VarChar(191)
+  name                 String @db.VarChar(191)
+  shortName            String? @db.LongText
+  brandId              String? @db.VarChar(191)
+  categoryId           String? @db.VarChar(191)
+  description          String? @db.LongText
+  items                Json
+  marketPrice          Decimal?                 @db.Decimal(12, 2)
+  defaultSalePrice     Decimal?                 @db.Decimal(12, 2)
+  deliveryProfileId    String? @db.VarChar(191)
+  deliveryOverrideText String? @db.LongText
+  status               GlobalProductStatus      @default(active)
+  primaryImageAssetId  String? @db.VarChar(191)
+  searchText           String                   @db.Text
+  revision             Int                      @default(1)
+  deletedAt            DateTime?
+  createdAt            DateTime                 @default(now())
+  updatedAt            DateTime                 @updatedAt
+  owner                User                     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  brand                Brand?                   @relation(fields: [brandId], references: [id], onDelete: SetNull)
+  category             ProductCategory?         @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  deliveryProfile      DeliveryProfile?         @relation(fields: [deliveryProfileId], references: [id], onDelete: SetNull)
+  primaryImageAsset    Asset?                   @relation("GlobalPrimaryImage", fields: [primaryImageAssetId], references: [id], onDelete: SetNull)
+  images               ProductAsset[]
+  versions             GlobalProductVersion[]
+  projectSnapshots     ProjectProductSnapshot[]
+
+  @@unique([ownerId, sku])
+  @@index([ownerId, updatedAt])
+  @@index([ownerId, status, updatedAt])
+  @@index([ownerId, name])
+  @@index([ownerId, categoryId])
+  @@index([ownerId, brandId])
+  @@index([ownerId, deliveryProfileId])
+  @@index([primaryImageAssetId])
+}
+
+model GlobalProductVersion {
+  id            String        @id @default(cuid()) @db.VarChar(191)
+  productId     String @db.VarChar(191)
+  versionNumber Int
+  snapshot      Json
+  changeSummary String? @db.LongText
+  createdById   String @db.VarChar(191)
+  createdAt     DateTime      @default(now())
+  product       GlobalProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdBy     User          @relation("GlobalProductVersionAuthor", fields: [createdById], references: [id], onDelete: Restrict)
+
+  @@unique([productId, versionNumber])
+  @@index([productId, createdAt])
+}
+
+model ProductAsset {
+  id        String           @id @default(cuid()) @db.VarChar(191)
+  productId String @db.VarChar(191)
+  assetId   String @db.VarChar(191)
+  role      ProductAssetRole
+  sortOrder Int              @default(0)
+  createdAt DateTime         @default(now())
+  product   GlobalProduct    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  asset     Asset            @relation(fields: [assetId], references: [id], onDelete: Restrict)
+
+  @@unique([productId, assetId])
+  @@index([productId, role, sortOrder])
+  @@index([assetId])
+}
+
+model ProductCategory {
+  id        String            @id @default(cuid()) @db.VarChar(191)
+  ownerId   String @db.VarChar(191)
+  code      String? @db.VarChar(191)
+  name      String @db.VarChar(191)
+  parentId  String? @db.VarChar(191)
+  sortOrder Int               @default(0)
+  active    Boolean           @default(true)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  owner     User              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  parent    ProductCategory?  @relation("CategoryTree", fields: [parentId], references: [id], onDelete: Restrict)
+  children  ProductCategory[] @relation("CategoryTree")
+  products  GlobalProduct[]
+
+  @@unique([ownerId, parentId, name])
+  @@unique([ownerId, code])
+  @@index([ownerId, sortOrder])
+  @@index([parentId])
+}
+
+model Brand {
+  id          String          @id @default(cuid()) @db.VarChar(191)
+  ownerId     String @db.VarChar(191)
+  name        String @db.VarChar(191)
+  logoAssetId String? @db.VarChar(191)
+  active      Boolean         @default(true)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  owner       User            @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  logoAsset   Asset?          @relation("BrandLogo", fields: [logoAssetId], references: [id], onDelete: SetNull)
+  products    GlobalProduct[]
+
+  @@unique([ownerId, name])
+  @@index([ownerId, updatedAt])
+  @@index([logoAssetId])
+}
+
+model DeliveryProfile {
+  id              String          @id @default(cuid()) @db.VarChar(191)
+  ownerId         String @db.VarChar(191)
+  name            String @db.VarChar(191)
+  description     String? @db.LongText
+  includedRegions Json
+  excludedRegions Json
+  displayText     String @db.LongText
+  active          Boolean         @default(true)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  owner           User            @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  products        GlobalProduct[]
+
+  @@unique([ownerId, name])
+  @@index([ownerId, updatedAt])
+}
+
+model ProjectDesign {
+  id                        String              @id @default(cuid()) @db.VarChar(191)
+  projectId                 String              @unique @db.VarChar(191)
+  templateId                String @db.LongText
+  themeId                   String @db.LongText
+  themeOverrides            Json
+  logoAssetId               String? @db.VarChar(191)
+  logoUrl                   String? @db.LongText
+  brandName                 String? @db.LongText
+  brandColor                String? @db.LongText
+  pageRatio                 String              @default(dbgenerated("(_utf8mb4\\'16:9\\')")) @db.LongText
+  templateDefinitionId      String? @db.VarChar(191)
+  templateDefinitionVersion Int?
+  templateSnapshot          Json?
+  themeDefinitionId         String? @db.VarChar(191)
+  themeDefinitionVersion    Int?
+  themeSnapshot             Json?
+  createdAt                 DateTime            @default(now())
+  updatedAt                 DateTime            @updatedAt
+  project                   Project             @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  logoAsset                 Asset?              @relation("ProjectLogo", fields: [logoAssetId], references: [id], onDelete: SetNull)
+  templateDefinition        TemplateDefinition? @relation(fields: [templateDefinitionId], references: [id], onDelete: SetNull)
+  themeDefinition           ThemeDefinition?    @relation(fields: [themeDefinitionId], references: [id], onDelete: SetNull)
+
+  @@index([templateDefinitionId])
+  @@index([themeDefinitionId])
+}
+
+model ProjectEditorState {
+  id                 String   @id @default(cuid()) @db.VarChar(191)
+  projectId          String   @unique @db.VarChar(191)
+  slideOverrides     Json
+  manualSlides       Json
+  hiddenSlideIds     Json
+  lockedSlideIds     Json
+  pageOrder          Json
+  selectedLayoutMode String   @default(dbgenerated("(_utf8mb4\\'smart\\')")) @db.LongText
+  layoutOverrides    Json
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  project            Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model Asset {
+  id                    String                   @id @default(cuid()) @db.VarChar(191)
+  userId                String @db.VarChar(191)
+  type                  AssetType
+  fileName              String @db.LongText
+  storageKey            String                   @unique @db.VarChar(191)
+  mimeType              String @db.LongText
+  size                  BigInt
+  width                 Int?
+  height                Int?
+  checksum              String? @db.VarChar(191)
+  isSystem              Boolean                  @default(false)
+  metadata              Json?
+  deletedAt             DateTime?
+  createdAt             DateTime                 @default(now())
+  updatedAt             DateTime                 @updatedAt
+  user                  User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projectLinks          ProjectAsset[]
+  sourceFiles           SourceFile[]
+  primaryProducts       ProjectProductSnapshot[] @relation("PrimaryProductImage")
+  globalPrimaryProducts GlobalProduct[]          @relation("GlobalPrimaryImage")
+  productAssets         ProductAsset[]
+  brandLogos            Brand[]                  @relation("BrandLogo")
+  templateThumbnails    TemplateDefinition[]     @relation("TemplateThumbnail")
+  brandKitLogos         BrandKit[]               @relation("BrandKitLogo")
+  logoDesigns           ProjectDesign[]          @relation("ProjectLogo")
+  exports               ExportRecord[]
+
+  @@index([userId, createdAt])
+  @@index([userId, checksum])
+  @@index([type])
+}
+
+model ThemeDefinition {
+  id             String               @id @default(cuid()) @db.VarChar(191)
+  ownerId        String? @db.VarChar(191)
+  name           String @db.VarChar(191)
+  rendererKey    String @db.LongText
+  tokens         Json
+  isSystem       Boolean              @default(false)
+  scope          ResourceScope        @default(personal)
+  status         TemplateStatus       @default(draft)
+  version        Int                  @default(1)
+  deletedAt      DateTime?
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  owner          User?                @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  templates      TemplateDefinition[]
+  projectDesigns ProjectDesign[]
+
+  @@unique([ownerId, name])
+  @@index([ownerId, status, updatedAt])
+  @@index([isSystem, status])
+}
+
+model TemplateDefinition {
+  id                String             @id @default(cuid()) @db.VarChar(191)
+  ownerId           String? @db.VarChar(191)
+  name              String @db.VarChar(191)
+  description       String? @db.LongText
+  category          String @db.VarChar(191)
+  status            TemplateStatus     @default(draft)
+  version           Int                @default(1)
+  thumbnailAssetId  String? @db.VarChar(191)
+  themeDefinitionId String? @db.VarChar(191)
+  brandKitId        String? @db.VarChar(191)
+  rendererKey       String @db.LongText
+  config            Json
+  tags              Json
+  searchText        String             @db.Text
+  isSystem          Boolean            @default(false)
+  scope             ResourceScope      @default(personal)
+  usageCount        Int                @default(0)
+  previewDirty      Boolean            @default(true)
+  deletedAt         DateTime?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  owner             User?              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  thumbnailAsset    Asset?             @relation("TemplateThumbnail", fields: [thumbnailAssetId], references: [id], onDelete: SetNull)
+  themeDefinition   ThemeDefinition?   @relation(fields: [themeDefinitionId], references: [id], onDelete: SetNull)
+  brandKit          BrandKit?          @relation(fields: [brandKitId], references: [id], onDelete: SetNull)
+  favorites         TemplateFavorite[]
+  projectDesigns    ProjectDesign[]
+
+  @@unique([ownerId, name])
+  @@index([ownerId, category, status, updatedAt])
+  @@index([isSystem, status, updatedAt])
+  @@index([ownerId, name])
+  @@index([themeDefinitionId])
+  @@index([thumbnailAssetId])
+}
+
+model TemplateFavorite {
+  id         String             @id @default(cuid()) @db.VarChar(191)
+  userId     String @db.VarChar(191)
+  templateId String @db.VarChar(191)
+  createdAt  DateTime           @default(now())
+  user       User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  template   TemplateDefinition @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, templateId])
+  @@index([templateId])
+}
+
+model BrandKit {
+  id             String               @id @default(cuid()) @db.VarChar(191)
+  ownerId        String @db.VarChar(191)
+  name           String @db.VarChar(191)
+  logoAssetId    String? @db.VarChar(191)
+  primaryColor   String? @db.LongText
+  secondaryColor String? @db.LongText
+  fontTitle      String? @db.LongText
+  fontBody       String? @db.LongText
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  owner          User                 @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  logoAsset      Asset?               @relation("BrandKitLogo", fields: [logoAssetId], references: [id], onDelete: SetNull)
+  templates      TemplateDefinition[]
+
+  @@unique([ownerId, name])
+  @@index([logoAssetId])
+}
+
+model ProjectAsset {
+  id        String           @id @default(cuid()) @db.VarChar(191)
+  projectId String @db.VarChar(191)
+  assetId   String @db.VarChar(191)
+  role      ProjectAssetRole
+  createdAt DateTime         @default(now())
+  project   Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  asset     Asset            @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, assetId, role])
+  @@index([projectId, role])
+  @@index([assetId])
+}
+
+model SourceFile {
+  id           String   @id @default(cuid()) @db.VarChar(191)
+  projectId    String @db.VarChar(191)
+  assetId      String @db.VarChar(191)
+  sourceType   String @db.LongText
+  originalName String @db.LongText
+  metadata     Json?
+  createdAt    DateTime @default(now())
+  project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  asset        Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, createdAt])
+  @@index([assetId])
+}
+
+model ProjectVersion {
+  id            String   @id @default(cuid()) @db.VarChar(191)
+  projectId     String @db.VarChar(191)
+  versionNumber Int
+  snapshot      Json
+  label         String? @db.LongText
+  reason        String? @db.LongText
+  createdById   String @db.VarChar(191)
+  createdAt     DateTime @default(now())
+  project       Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdBy     User     @relation("VersionAuthor", fields: [createdById], references: [id], onDelete: Restrict)
+
+  @@unique([projectId, versionNumber])
+  @@index([projectId, createdAt])
+}
+
+model ExportRecord {
+  id        String   @id @default(cuid()) @db.VarChar(191)
+  projectId String @db.VarChar(191)
+  assetId   String @db.VarChar(191)
+  versionId String? @db.LongText
+  format    String   @default(dbgenerated("(_utf8mb4\\'pptx\\')")) @db.LongText
+  pageCount Int
+  createdAt DateTime @default(now())
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  asset     Asset    @relation(fields: [assetId], references: [id], onDelete: Restrict)
+
+  @@index([projectId, createdAt])
+  @@index([assetId])
+}
+
+model ProjectActivity {
+  id        String   @id @default(cuid()) @db.VarChar(191)
+  projectId String @db.VarChar(191)
+  userId    String @db.VarChar(191)
+  action    String @db.LongText
+  metadata  Json?
+  createdAt DateTime @default(now())
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, createdAt])
+  @@index([userId, createdAt])
+}

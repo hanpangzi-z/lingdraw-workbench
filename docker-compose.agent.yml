@@ -1,0 +1,172 @@
+name: lingdraw-mysql80
+
+services:
+  mysql:
+    image: mysql:8.0.45@sha256:4af1f8815716546f5b12410f7621f37f93db8dd11a184706ef59111930b8c2ff
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?set MYSQL_ROOT_PASSWORD}
+      PLATFORM_MYSQL_PASSWORD: ${PLATFORM_MYSQL_PASSWORD:?set PLATFORM_MYSQL_PASSWORD}
+      AGENT_MYSQL_PASSWORD: ${AGENT_MYSQL_PASSWORD:?set AGENT_MYSQL_PASSWORD}
+      PPT_MYSQL_PASSWORD: ${PPT_MYSQL_PASSWORD:?set PPT_MYSQL_PASSWORD}
+      TEMPORAL_MYSQL_PASSWORD: ${TEMPORAL_MYSQL_PASSWORD:?set TEMPORAL_MYSQL_PASSWORD}
+    ports: ["127.0.0.1:3307:3306"]
+    volumes:
+      - mysql80-data:/var/lib/mysql
+      - ./ops/mysql/10-databases.sh:/docker-entrypoint-initdb.d/10-databases.sh:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  temporal:
+    image: temporalio/auto-setup:1.27.2@sha256:b44cbfeb43dbeae42db113b44fb8414c3452f05643b3d6b1592f955277d73526
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      DB: mysql8
+      DB_PORT: 3306
+      MYSQL_USER: temporal
+      MYSQL_PWD: ${TEMPORAL_MYSQL_PASSWORD:?set TEMPORAL_MYSQL_PASSWORD}
+      MYSQL_SEEDS: mysql
+      DBNAME: temporal
+      VISIBILITY_DBNAME: temporal_visibility
+      SKIP_DB_CREATE: "true"
+      SKIP_DEFAULT_NAMESPACE_CREATION: "true"
+      SKIP_ADD_CUSTOM_SEARCH_ATTRIBUTES: "true"
+    ports:
+      - "7233:7233"
+
+  temporal-ui:
+    image: temporalio/ui:2.34.0
+    depends_on: [temporal]
+    environment:
+      TEMPORAL_ADDRESS: temporal:7233
+    ports:
+      - "8233:8080"
+
+  ppt-migrate:
+    build:
+      context: ./ppt-app
+      dockerfile: Dockerfile
+      target: migrate
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      PPT_MYSQL_ALLOW_PUBLIC_KEY_RETRIEVAL: "true"
+      DATABASE_URL: mysql://folio:${PPT_MYSQL_PASSWORD}@mysql:3306/folio
+      PPT_DATABASE_URL: mysql://folio:${PPT_MYSQL_PASSWORD}@mysql:3306/folio
+      PPT_INTERNAL_TOKEN: ${PPT_INTERNAL_TOKEN:?set PPT_INTERNAL_TOKEN}
+      PPT_INTERNAL_URL: http://lingdraw:37621
+      PPT_STORAGE_PATH: /app/storage
+      LOCAL_STORAGE_PATH: /app/storage
+      STORAGE_PROVIDER: ${STORAGE_PROVIDER:-local}
+      S3_ENDPOINT: ${S3_ENDPOINT:-}
+      S3_REGION: ${S3_REGION:-auto}
+      S3_BUCKET: ${S3_BUCKET:-}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:-}
+      S3_FORCE_PATH_STYLE: ${S3_FORCE_PATH_STYLE:-false}
+    volumes:
+      - ./data/ppt/storage:/app/storage
+    restart: "no"
+
+  ppt-app:
+    build:
+      context: ./ppt-app
+      dockerfile: Dockerfile
+      target: runner
+    depends_on:
+      ppt-migrate:
+        condition: service_completed_successfully
+    environment:
+      PPT_MYSQL_ALLOW_PUBLIC_KEY_RETRIEVAL: "true"
+      NODE_ENV: production
+      NEXT_TELEMETRY_DISABLED: "1"
+      HOSTNAME: 0.0.0.0
+      PORT: 37623
+      DATABASE_URL: mysql://folio:${PPT_MYSQL_PASSWORD}@mysql:3306/folio
+      PPT_DATABASE_URL: mysql://folio:${PPT_MYSQL_PASSWORD}@mysql:3306/folio
+      PPT_INTERNAL_TOKEN: ${PPT_INTERNAL_TOKEN:?set PPT_INTERNAL_TOKEN}
+      PPT_INTERNAL_URL: http://lingdraw:37621
+      PPT_STORAGE_PATH: /app/storage
+      LOCAL_STORAGE_PATH: /app/storage
+      STORAGE_PROVIDER: ${STORAGE_PROVIDER:-local}
+      S3_ENDPOINT: ${S3_ENDPOINT:-}
+      S3_REGION: ${S3_REGION:-auto}
+      S3_BUCKET: ${S3_BUCKET:-}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:-}
+      S3_FORCE_PATH_STYLE: ${S3_FORCE_PATH_STYLE:-false}
+    expose:
+      - "37623"
+    volumes:
+      - ./data/ppt/storage:/app/storage
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:37623/ppt/api/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 6s
+      retries: 20
+      start_period: 30s
+    restart: unless-stopped
+
+  lingdraw:
+    build:
+      context: .
+      dockerfile: Dockerfile.agent
+    depends_on:
+      mysql:
+        condition: service_healthy
+      temporal:
+        condition: service_started
+    environment:
+      PLATFORM_DATABASE_URL: mysql+pymysql://platform:${PLATFORM_MYSQL_PASSWORD}@mysql:3306/lingdraw_platform
+      INFINITE_CANVAS_PORT: 37621
+      DESIGN_AGENT_ENABLED: "1"
+      AGENT_DATABASE_URL: mysql+asyncmy://agent:${AGENT_MYSQL_PASSWORD}@mysql:3306/lingdraw_agent
+      AGENT_ORCHESTRATOR: temporal
+      AGENT_INTERNAL_TOKEN: ${AGENT_INTERNAL_TOKEN:?set AGENT_INTERNAL_TOKEN}
+      TEMPORAL_ADDRESS: temporal:7233
+      TEMPORAL_NAMESPACE: default
+      TEMPORAL_TASK_QUEUE: lingdraw-design-agent
+      PPT_INTERNAL_URL: http://ppt-app:37623
+      PPT_INTERNAL_TOKEN: ${PPT_INTERNAL_TOKEN:?set PPT_INTERNAL_TOKEN}
+      PPT_DATABASE_URL: mysql://folio:${PPT_MYSQL_PASSWORD}@mysql:3306/folio
+      PPT_STORAGE_PATH: /app/data/ppt/storage
+    ports:
+      - "37621:37621"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:37621/api/agent/health', timeout=5)"]
+      interval: 10s
+      timeout: 6s
+      retries: 20
+    volumes:
+      - ./API:/app/API
+      - ./assets:/app/assets
+      - ./data:/app/data
+      - ./output:/app/output
+      - ./workflows:/app/workflows
+    command: ["sh", "-c", "alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port 37621"]
+
+  agent-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.agent
+    depends_on:
+      lingdraw:
+        condition: service_healthy
+      temporal:
+        condition: service_started
+    environment:
+      AGENT_INTERNAL_API_URL: http://lingdraw:37621
+      AGENT_INTERNAL_TOKEN: ${AGENT_INTERNAL_TOKEN:?set AGENT_INTERNAL_TOKEN}
+      TEMPORAL_ADDRESS: temporal:7233
+      TEMPORAL_NAMESPACE: default
+      TEMPORAL_TASK_QUEUE: lingdraw-design-agent
+      AGENT_MAX_CONCURRENT_ACTIVITIES: 8
+    command: ["python", "-m", "agent_service.worker"]
+
+volumes:
+  mysql80-data:
